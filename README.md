@@ -1,1 +1,8 @@
 ![Alt text](AnimalShelter.WebApi/mono-api-ss/Screenshot_1.png)
+![Alt text](AnimalShelter.WebApi/mono-api-ss/Screenshot_2.png)
+![Alt text](AnimalShelter.WebApi/mono-api-ss/Screenshot_3.png)
+![Alt text](AnimalShelter.WebApi/mono-api-ss/Screenshot_4.png)
+![Alt text](AnimalShelter.WebApi/mono-api-ss/Screenshot_5.png)
+![Alt text](AnimalShelter.WebApi/mono-api-ss/Screenshot_6.png)
+![Alt text](AnimalShelter.WebApi/mono-api-ss/Screenshot_7.png)
+![Alt text](AnimalShelter.WebApi/mono-api-ss/Screenshot_8.png)
