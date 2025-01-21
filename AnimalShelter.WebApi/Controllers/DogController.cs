@@ -53,21 +53,22 @@ namespace AnimalShelter.WebApi.Controllers
                     message = "Invalid data."
                 });
 
-            if (dogs.Any(p => p.Id == dog.Id))
-                return Conflict(new
-                {
-                    error = "Conflict",
-                    message = $"ID {dog.Id} is already taken."
-                });
-
-            dogs.Add(dog);
-            return Ok();
+             dog.Id = dogs.Count > 0 ? dogs.Max(a => a.Id) + 1 : 1;
+             dogs.Add(dog);
+             return Ok();
         }
 
         // PUT api/<DogController>/5
         [HttpPut("{id}")]
         public IActionResult Put(int id, [FromBody] Dog dog)
         { 
+            if (dog == null || dog.Name == null)
+                return BadRequest(new
+                {
+                    error = "Bad Request",
+                    message = "Invalid data."
+                });
+
             var resource = dogs.FirstOrDefault(p => p.Id == id);
 
             if (resource == null)
@@ -78,14 +79,6 @@ namespace AnimalShelter.WebApi.Controllers
                     message = $"The resource with ID {id} does not exist."
                 });
             }
-
-            if (dog == null || dog.Name == null)
-                return BadRequest(new
-                {
-                    error = "Bad Request",
-                    message = "Invalid data."
-                });
-
             resource.Name = dog.Name;
             resource.Age = dog.Age;
 
