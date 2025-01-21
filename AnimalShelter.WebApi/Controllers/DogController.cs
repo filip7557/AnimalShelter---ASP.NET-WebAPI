@@ -53,9 +53,9 @@ namespace AnimalShelter.WebApi.Controllers
                 });
 
             if (dogs.Any(p => p.Id == dog.Id))
-                return BadRequest(new
+                return Conflict(new
                 {
-                    error = "Bad Request",
+                    error = "Conflict",
                     message = $"ID {dog.Id} is already taken."
                 });
 
