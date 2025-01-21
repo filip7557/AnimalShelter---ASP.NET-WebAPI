@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace AnimalShelter.WebApi.Controllers
-{ 
+{
     [Route("api/[controller]")]
     [ApiController]
     [LogActionFilter]
@@ -53,15 +53,15 @@ namespace AnimalShelter.WebApi.Controllers
                     message = "Invalid data."
                 });
 
-             dog.Id = dogs.Count > 0 ? dogs.Max(a => a.Id) + 1 : 1;
-             dogs.Add(dog);
-             return Ok();
+            dog.Id = dogs.Count > 0 ? dogs.Max(a => a.Id) + 1 : 1;
+            dogs.Add(dog);
+            return Ok();
         }
 
         // PUT api/<DogController>/5
         [HttpPut("{id}")]
         public IActionResult Put(int id, [FromBody] Dog dog)
-        { 
+        {
             if (dog == null || dog.Name == null)
                 return BadRequest(new
                 {
