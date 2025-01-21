@@ -26,7 +26,7 @@ namespace AnimalShelter.WebApi.Controllers
 
         // GET api/<DogController>/5
         [HttpGet("{id}")]
-        public IActionResult Get(int id)
+        public IActionResult Get(Guid id)
         {
             var resource = dogs.FirstOrDefault(p => p.Id == id);
 
@@ -53,14 +53,14 @@ namespace AnimalShelter.WebApi.Controllers
                     message = "Invalid data."
                 });
 
-            dog.Id = dogs.Count > 0 ? dogs.Max(a => a.Id) + 1 : 1;
+            dog.Id = Guid.NewGuid();
             dogs.Add(dog);
             return Ok();
         }
 
         // PUT api/<DogController>/5
         [HttpPut("{id}")]
-        public IActionResult Put(int id, [FromBody] Dog dog)
+        public IActionResult Put(Guid id, [FromBody] Dog dog)
         {
             if (dog == null || dog.Name == null)
                 return BadRequest(new
@@ -87,7 +87,7 @@ namespace AnimalShelter.WebApi.Controllers
 
         // DELETE api/<DogController>/5
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        public IActionResult Delete(Guid id)
         {
             var resource = dogs.FirstOrDefault(p => p.Id == id);
 
