@@ -7,6 +7,28 @@ namespace AnimalShelter.WebApi.Controllers
     [ApiController]
     public class PdfController : ControllerBase
     {
+        [HttpGet]
+        public IActionResult Get()
+        {
+            var folderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/files");
+
+            // Check if directory exists
+            if (!Directory.Exists(folderPath))
+            {
+                return NotFound(new {
+                    error = "Not Found",
+                    message = "Directory not found." }
+                );
+            }
+
+            // Get all files in the directory
+            var fileNames = Directory.GetFiles(folderPath)
+                                      .Select(Path.GetFileName)
+                                      .ToList();
+
+            return Ok(new { files = fileNames });
+        }
+
         [HttpGet("{fileName}")]
         public IActionResult Get(string fileName)
         {
