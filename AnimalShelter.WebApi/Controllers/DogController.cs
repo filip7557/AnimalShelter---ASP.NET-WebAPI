@@ -7,6 +7,7 @@ namespace AnimalShelter.WebApi.Controllers
 { 
     [Route("api/[controller]")]
     [ApiController]
+    [LogActionFilter]
     public class DogController : ControllerBase
     {
         public static List<Dog> dogs = new List<Dog>();
@@ -60,7 +61,6 @@ namespace AnimalShelter.WebApi.Controllers
                 });
 
             dogs.Add(dog);
-            Console.WriteLine(dogs.Count);
             return Ok();
         }
 
