@@ -1,5 +1,6 @@
 ﻿using AnimalShelter.WebApi.Models;
 using Microsoft.AspNetCore.Mvc;
+using Npgsql;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -11,35 +12,94 @@ namespace AnimalShelter.WebApi.Controllers
     public class DogController : ControllerBase
     {
         public static List<Dog> dogs = new List<Dog>();
+        private readonly string connectionString = "Host=localhost;Port=5432;Database=dogs;Username=postgres;Password=test";
 
         // GET: api/<DogController>
         [HttpGet]
         public IActionResult Get()
         {
-            Console.WriteLine(dogs.Count);
-            if (!dogs.Any())
+            var dogs = new List<Dog>();
+            try
             {
-                return NoContent();
+                using (var connection = new NpgsqlConnection(connectionString))
+                {
+                    var commandText = "SELECT \"Id\", \"Name\", \"Age\" FROM \"Dog\"";
+                    using var command = new NpgsqlCommand(commandText, connection);
+
+                    connection.Open();
+
+                    var reader = command.ExecuteReader();
+                    if (reader.HasRows)
+                    {
+                        while (reader.Read())
+                        {
+                            var id = Guid.Parse(reader[0].ToString()!);
+                            var name = reader[1].ToString()!;
+                            var age = int.TryParse(reader[2].ToString(), out int result) ? result : 0;
+                            var dog = new Dog() { Name = name, Age = age , Id = id };
+                            dogs.Add(dog);
+                        }
+                    }
+                    else
+                    {
+                        return NotFound();
+                    }
+
+                    connection.Close();
+
+                    return Ok(dogs);
+                }
             }
-            return Ok(dogs);
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    error = "Bad Request",
+                    message = ex.Message
+                });
+            }
         }
 
         // GET api/<DogController>/5
         [HttpGet("{id}")]
         public IActionResult Get(Guid id)
         {
-            var resource = dogs.FirstOrDefault(p => p.Id == id);
-
-            if (resource == null)
+            try
             {
-                return NotFound(new
+                var dog = new Dog() { Name = "" };
+                using (var connection = new NpgsqlConnection(connectionString))
                 {
-                    error = "Not Found",
-                    message = $"The resource with ID {id} does not exist."
+                    var commandText = "SELECT \"Id\", \"Name\", \"Age\" FROM \"Dog\" WHERE \"Id\" = @id;";
+                    using var command = new NpgsqlCommand(commandText, connection);
+                    command.Parameters.AddWithValue("id", NpgsqlTypes.NpgsqlDbType.Uuid, id);
+
+                    connection.Open();
+
+                    var reader = command.ExecuteReader();
+                    if (reader.HasRows)
+                    {
+                        reader.Read();
+                        dog.Id = Guid.Parse(reader[0].ToString()!);
+                        dog.Name = reader[1].ToString()!;
+                        dog.Age = int.TryParse(reader[2].ToString(), out int result) ? result : 0;
+                    } else
+                    {
+                        return NotFound();
+                    }
+
+                    connection.Close();
+
+                    return Ok(dog);
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    error = "Bad Request",
+                    message = ex.Message
                 });
             }
-
-            return Ok(resource);
         }
 
         // POST api/<DogController>
@@ -53,56 +113,120 @@ namespace AnimalShelter.WebApi.Controllers
                     message = "Invalid data."
                 });
 
-            dog.Id = Guid.NewGuid();
-            dogs.Add(dog);
-            return Ok();
+            try
+            {
+                using (var connection = new NpgsqlConnection(connectionString))
+                {
+                    var commandText = "INSERT INTO \"Dog\" (\"Id\", \"Name\", \"Age\") values (@id, @name, @age);";
+                    using var command = new NpgsqlCommand(commandText, connection);
+                    command.Parameters.AddWithValue("id", NpgsqlTypes.NpgsqlDbType.Uuid, Guid.NewGuid());
+                    command.Parameters.AddWithValue("name", dog.Name);
+                    command.Parameters.AddWithValue("age", dog.Age);
+
+                    connection.Open();
+                    
+                    var affectedRows = command.ExecuteNonQuery();
+                    if (affectedRows == 0)
+                        return BadRequest();
+                    
+                    connection.Close();
+
+                    return Ok("Saved.");
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    error = "Bad Request",
+                    message = ex.Message
+                });
+            }
         }
 
         // PUT api/<DogController>/5
         [HttpPut("{id}")]
         public IActionResult Put(Guid id, [FromBody] Dog dog)
         {
-            if (dog == null || dog.Name == null)
+            try
+            {
+                using (var connection = new NpgsqlConnection(connectionString))
+                {
+                    var commandText = "SELECT \"Id\", \"Name\", \"Age\" FROM \"Dog\" WHERE \"Id\" = @id;";
+                    using var command = new NpgsqlCommand(commandText, connection);
+                    command.Parameters.AddWithValue("id", NpgsqlTypes.NpgsqlDbType.Uuid, id);
+
+                    connection.Open();
+
+                    var reader = command.ExecuteReader();
+
+                    if (!reader.HasRows)
+                    {
+                        return NotFound();
+                    }
+
+                    connection.Close();
+
+                    connection.Open();
+
+                    commandText = "UPDATE \"Dog\" set \"Name\" = @name, \"Age\" = @age WHERE \"Id\" = @id;";
+                    using var updateCommand = new NpgsqlCommand(commandText, connection);
+                    updateCommand.Parameters.AddWithValue("name", dog.Name);
+                    updateCommand.Parameters.AddWithValue("age", dog.Age);
+                    updateCommand.Parameters.AddWithValue("id", NpgsqlTypes.NpgsqlDbType.Uuid, id);
+
+                    var affectedRows = updateCommand.ExecuteNonQuery();
+                    if (affectedRows == 0)
+                    {
+                        return BadRequest();
+                    }
+
+                    connection.Close();
+
+                    return Ok("Updated.");
+                }
+            }
+            catch (Exception ex)
+            {
                 return BadRequest(new
                 {
                     error = "Bad Request",
-                    message = "Invalid data."
-                });
-
-            var resource = dogs.FirstOrDefault(p => p.Id == id);
-
-            if (resource == null)
-            {
-                return NotFound(new
-                {
-                    error = "Not Found",
-                    message = $"The resource with ID {id} does not exist."
+                    message = ex.Message
                 });
             }
-            resource.Name = dog.Name;
-            resource.Age = dog.Age;
-
-            return Ok();
         }
 
         // DELETE api/<DogController>/5
         [HttpDelete("{id}")]
         public IActionResult Delete(Guid id)
         {
-            var resource = dogs.FirstOrDefault(p => p.Id == id);
-
-            if (resource == null)
+            try
             {
-                return NotFound(new
+                using (var connection = new NpgsqlConnection(connectionString))
                 {
-                    error = "Not Found",
-                    message = $"The resource with ID {id} does not exist."
+                    var commandText = "DELETE FROM \"Dog\" WHERE \"Id\" = @id;";
+                    using var command = new NpgsqlCommand(commandText, connection);
+                    command.Parameters.AddWithValue("id", NpgsqlTypes.NpgsqlDbType.Uuid, id);
+
+                    connection.Open();
+
+                    var affectedRows = command.ExecuteNonQuery();
+                    if (affectedRows == 0)
+                        return NotFound();
+
+                    connection.Close();
+
+                    return Ok("Deleted.");
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    error = "Bad Request",
+                    message = ex.Message
                 });
             }
-
-            dogs.Remove(resource);
-
-            return Ok();
         }
     }
 }
