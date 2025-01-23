@@ -22,16 +22,16 @@ namespace AnimalShelter.WebApi.Controllers
             {
                 using (var connection = new NpgsqlConnection(connectionString))
                 {
-                    var commandText = "SELECT \"Id\", \"Name\", \"Age\" FROM \"Dog\" WHERE 1 = 1 ";
+                    var commandText = "SELECT \"Id\", \"Name\", \"Age\" FROM \"Dog\" WHERE 1 = 1";
                     using var command = new NpgsqlCommand(commandText, connection);
                     if (name != null)
                     {
-                        command.CommandText += "AND \"Name\" = @name";
+                        command.CommandText += " AND \"Name\" = @name";
                         command.Parameters.AddWithValue("name", name);
                     }
                     if (age != null)
                     {
-                        command.CommandText += "AND \"Age\" = @age";
+                        command.CommandText += " AND \"Age\" = @age";
                         command.Parameters.AddWithValue("age", age);
                     }
 
