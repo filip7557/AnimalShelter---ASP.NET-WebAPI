@@ -15,7 +15,7 @@ namespace AnimalShelter.WebApi.Controllers
 
         // GET: api/<DogController>
         [HttpGet]
-        public IActionResult Get([FromQuery]string? name = null, [FromQuery]int? age = null)
+        public IActionResult Get([FromQuery]string? name = null, [FromQuery]int? age = null, [FromQuery]string? breed = null)
         {
             var dogs = new List<Dog>();
             try
@@ -33,6 +33,11 @@ namespace AnimalShelter.WebApi.Controllers
                     {
                         command.CommandText += " AND \"Age\" = @age";
                         command.Parameters.AddWithValue("age", age);
+                    }
+                    if (breed != null)
+                    {
+                        command.CommandText += " AND \"Breed\".\"Name\" = @breed";
+                        command.Parameters.AddWithValue("breed", breed);
                     }
 
                     connection.Open();
