@@ -2,6 +2,9 @@
 {
     public class Dog
     {
+        public Dog()
+        {
+        }
 
         public Dog(string name, int age)
         {
@@ -10,7 +13,7 @@
         }
 
         public Guid Id { get; set; }
-        public string? Name { get; set; }
+        public required string Name { get; set; }
         public int Age { get; set; }
     }
 }
