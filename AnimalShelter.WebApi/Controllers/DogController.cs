@@ -11,7 +11,6 @@ namespace AnimalShelter.WebApi.Controllers
     [LogActionFilter]
     public class DogController : ControllerBase
     {
-        public static List<Dog> dogs = new List<Dog>();
         private readonly string connectionString = "Host=localhost;Port=5432;Database=dogs;Username=postgres;Password=test";
 
         // GET: api/<DogController>
