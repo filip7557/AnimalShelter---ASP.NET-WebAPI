@@ -53,6 +53,7 @@ namespace AnimalShelter.WebApi.Controllers
                     }
                     else
                     {
+                        connection.Close();
                         return NotFound();
                     }
 
@@ -95,6 +96,7 @@ namespace AnimalShelter.WebApi.Controllers
                         dog.Age = int.TryParse(reader[2].ToString(), out int result) ? result : 0;
                     } else
                     {
+                        connection.Close();
                         return NotFound();
                     }
 
@@ -173,6 +175,7 @@ namespace AnimalShelter.WebApi.Controllers
 
                     if (!reader.HasRows)
                     {
+                        connection.Close();
                         return NotFound();
                     }
 
@@ -189,6 +192,7 @@ namespace AnimalShelter.WebApi.Controllers
                     var affectedRows = updateCommand.ExecuteNonQuery();
                     if (affectedRows == 0)
                     {
+                        connection.Close();
                         return BadRequest();
                     }
 
@@ -223,7 +227,10 @@ namespace AnimalShelter.WebApi.Controllers
 
                     var affectedRows = command.ExecuteNonQuery();
                     if (affectedRows == 0)
+                    {
+                        connection.Close();
                         return NotFound();
+                    }
 
                     connection.Close();
 
