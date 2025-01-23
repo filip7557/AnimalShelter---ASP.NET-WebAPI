@@ -1,6 +1,8 @@
 ﻿using AnimalShelter.WebApi.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Npgsql;
+using System.Xml.Linq;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -13,6 +15,25 @@ namespace AnimalShelter.WebApi.Controllers
     {
         private readonly string connectionString = "Host=localhost;Port=5432;Database=dogs;Username=postgres;Password=test";
 
+        private void AddDogFilter(string? name, int? age, string? breed, NpgsqlCommand command)
+        {
+            if (name != null)
+            {
+                command.CommandText += " AND \"Dog.Name\".\"Name\" = @name";
+                command.Parameters.AddWithValue("name", name);
+            }
+            if (age != null)
+            {
+                command.CommandText += " AND \"Age\" = @age";
+                command.Parameters.AddWithValue("age", age);
+            }
+            if (breed != null)
+            {
+                command.CommandText += " AND \"Breed\".\"Name\" = @breed";
+                command.Parameters.AddWithValue("breed", breed);
+            }
+        }
+
         // GET: api/<DogController>
         [HttpGet]
         public IActionResult Get([FromQuery]string? name = null, [FromQuery]int? age = null, [FromQuery]string? breed = null)
@@ -24,21 +45,8 @@ namespace AnimalShelter.WebApi.Controllers
                 {
                     var commandText = "SELECT \"Dog\".\"Id\", \"Dog\".\"Name\", \"Age\", \"Breed\".\"Name\", \"Breed\".\"Id\" FROM \"Dog\" LEFT JOIN \"Breed\" ON \"Dog\".\"BreedId\" = \"Breed\".\"Id\" WHERE 1 = 1";
                     using var command = new NpgsqlCommand(commandText, connection);
-                    if (name != null)
-                    {
-                        command.CommandText += " AND \"Dog.Name\".\"Name\" = @name";
-                        command.Parameters.AddWithValue("name", name);
-                    }
-                    if (age != null)
-                    {
-                        command.CommandText += " AND \"Age\" = @age";
-                        command.Parameters.AddWithValue("age", age);
-                    }
-                    if (breed != null)
-                    {
-                        command.CommandText += " AND \"Breed\".\"Name\" = @breed";
-                        command.Parameters.AddWithValue("breed", breed);
-                    }
+
+                    AddDogFilter(name, age, breed, command);
 
                     connection.Open();
 
