@@ -22,11 +22,11 @@ namespace AnimalShelter.WebApi.Controllers
             {
                 using (var connection = new NpgsqlConnection(connectionString))
                 {
-                    var commandText = "SELECT \"Id\", \"Name\", \"Age\" FROM \"Dog\" WHERE 1 = 1";
+                    var commandText = "SELECT \"Dog\".\"Id\", \"Dog\".\"Name\", \"Age\", \"Breed\".\"Name\", \"Breed\".\"Id\" FROM \"Dog\" LEFT JOIN \"Breed\" ON \"Dog\".\"BreedId\" = \"Breed\".\"Id\" WHERE 1 = 1";
                     using var command = new NpgsqlCommand(commandText, connection);
                     if (name != null)
                     {
-                        command.CommandText += " AND \"Name\" = @name";
+                        command.CommandText += " AND \"Dog.Name\".\"Name\" = @name";
                         command.Parameters.AddWithValue("name", name);
                     }
                     if (age != null)
@@ -47,6 +47,12 @@ namespace AnimalShelter.WebApi.Controllers
                                 Name = reader[1].ToString()!,
                                 Age = int.TryParse(reader[2].ToString(), out int result) ? result : 0,
                                 Id = Guid.Parse(reader[0].ToString()!)
+                            };
+                            dog.BreedId = Guid.Parse(reader[4].ToString()!);
+                            dog.Breed = new Breed()
+                            {
+                                Name = reader[3].ToString()!,
+                                Id = (Guid)dog.BreedId
                             };
                             dogs.Add(dog);
                         }
@@ -81,7 +87,7 @@ namespace AnimalShelter.WebApi.Controllers
                 var dog = new Dog() { Name = "" };
                 using (var connection = new NpgsqlConnection(connectionString))
                 {
-                    var commandText = "SELECT \"Id\", \"Name\", \"Age\" FROM \"Dog\" WHERE \"Id\" = @id;";
+                    var commandText = "SELECT \"Dog\".\"Id\", \"Dog\".\"Name\", \"Age\", \"Breed\".\"Name\", \"Breed\".\"Id\" FROM \"Dog\" LEFT JOIN \"Breed\" ON \"Dog\".\"BreedId\" = \"Breed\".\"Id\" WHERE \"Id\" = @id;";
                     using var command = new NpgsqlCommand(commandText, connection);
                     command.Parameters.AddWithValue("id", NpgsqlTypes.NpgsqlDbType.Uuid, id);
 
@@ -94,6 +100,12 @@ namespace AnimalShelter.WebApi.Controllers
                         dog.Id = Guid.Parse(reader[0].ToString()!);
                         dog.Name = reader[1].ToString()!;
                         dog.Age = int.TryParse(reader[2].ToString(), out int result) ? result : 0;
+                        dog.BreedId = Guid.Parse(reader[4].ToString()!);
+                        dog.Breed = new Breed()
+                        {
+                            Name = reader[3].ToString()!,
+                            Id = (Guid)dog.BreedId
+                        };
                     } else
                     {
                         connection.Close();
@@ -130,11 +142,12 @@ namespace AnimalShelter.WebApi.Controllers
             {
                 using (var connection = new NpgsqlConnection(connectionString))
                 {
-                    var commandText = "INSERT INTO \"Dog\" (\"Id\", \"Name\", \"Age\") values (@id, @name, @age);";
+                    var commandText = "INSERT INTO \"Dog\" (\"Id\", \"Name\", \"Age\", \"BreedId\") values (@id, @name, @age, @breedid);";
                     using var command = new NpgsqlCommand(commandText, connection);
                     command.Parameters.AddWithValue("id", NpgsqlTypes.NpgsqlDbType.Uuid, Guid.NewGuid());
                     command.Parameters.AddWithValue("name", dog.Name);
                     command.Parameters.AddWithValue("age", dog.Age);
+                    command.Parameters.AddWithValue("breedid", dog.BreedId);
 
                     connection.Open();
                     
