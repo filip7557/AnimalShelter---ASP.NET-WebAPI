@@ -15,7 +15,7 @@ namespace AnimalShelter.WebApi.Controllers
     {
         private readonly string connectionString = "Host=localhost;Port=5432;Database=dogs;Username=postgres;Password=test";
 
-        private void AddDogFilter(string? name, int? age, string? breed, NpgsqlCommand command)
+        private void AddDogFilters(string? name, int? age, string? breed, NpgsqlCommand command)
         {
             if (name != null)
             {
@@ -46,7 +46,7 @@ namespace AnimalShelter.WebApi.Controllers
                     var commandText = "SELECT \"Dog\".\"Id\", \"Dog\".\"Name\", \"Age\", \"Breed\".\"Name\", \"Breed\".\"Id\" FROM \"Dog\" LEFT JOIN \"Breed\" ON \"Dog\".\"BreedId\" = \"Breed\".\"Id\" WHERE 1 = 1";
                     using var command = new NpgsqlCommand(commandText, connection);
 
-                    AddDogFilter(name, age, breed, command);
+                    AddDogFilters(name, age, breed, command);
 
                     connection.Open();
 
