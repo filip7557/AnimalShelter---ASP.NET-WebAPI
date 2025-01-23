@@ -15,15 +15,25 @@ namespace AnimalShelter.WebApi.Controllers
 
         // GET: api/<DogController>
         [HttpGet]
-        public IActionResult Get()
+        public IActionResult Get([FromQuery]string? name = null, [FromQuery]int? age = null)
         {
             var dogs = new List<Dog>();
             try
             {
                 using (var connection = new NpgsqlConnection(connectionString))
                 {
-                    var commandText = "SELECT \"Id\", \"Name\", \"Age\" FROM \"Dog\"";
+                    var commandText = "SELECT \"Id\", \"Name\", \"Age\" FROM \"Dog\" WHERE 1 = 1 ";
                     using var command = new NpgsqlCommand(commandText, connection);
+                    if (name != null)
+                    {
+                        command.CommandText += "AND \"Name\" = @name";
+                        command.Parameters.AddWithValue("name", name);
+                    }
+                    if (age != null)
+                    {
+                        command.CommandText += "AND \"Age\" = @age";
+                        command.Parameters.AddWithValue("age", age);
+                    }
 
                     connection.Open();
 
@@ -32,10 +42,12 @@ namespace AnimalShelter.WebApi.Controllers
                     {
                         while (reader.Read())
                         {
-                            var id = Guid.Parse(reader[0].ToString()!);
-                            var name = reader[1].ToString()!;
-                            var age = int.TryParse(reader[2].ToString(), out int result) ? result : 0;
-                            var dog = new Dog() { Name = name, Age = age , Id = id };
+                            var dog = new Dog()
+                            { 
+                                Name = reader[1].ToString()!,
+                                Age = int.TryParse(reader[2].ToString(), out int result) ? result : 0,
+                                Id = Guid.Parse(reader[0].ToString()!)
+                            };
                             dogs.Add(dog);
                         }
                     }
