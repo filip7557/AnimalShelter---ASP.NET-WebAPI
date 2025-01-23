@@ -87,7 +87,7 @@ namespace AnimalShelter.WebApi.Controllers
                 var dog = new Dog() { Name = "" };
                 using (var connection = new NpgsqlConnection(connectionString))
                 {
-                    var commandText = "SELECT \"Dog\".\"Id\", \"Dog\".\"Name\", \"Age\", \"Breed\".\"Name\", \"Breed\".\"Id\" FROM \"Dog\" LEFT JOIN \"Breed\" ON \"Dog\".\"BreedId\" = \"Breed\".\"Id\" WHERE \"Id\" = @id;";
+                    var commandText = "SELECT \"Dog\".\"Id\", \"Dog\".\"Name\", \"Age\", \"Breed\".\"Name\", \"Breed\".\"Id\" FROM \"Dog\" LEFT JOIN \"Breed\" ON \"Dog\".\"BreedId\" = \"Breed\".\"Id\" WHERE \"Dog\".\"Id\" = @id;";
                     using var command = new NpgsqlCommand(commandText, connection);
                     command.Parameters.AddWithValue("id", NpgsqlTypes.NpgsqlDbType.Uuid, id);
 
