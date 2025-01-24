@@ -13,10 +13,10 @@ namespace AnimalShelter.WebApi.Controllers
     {
         // GET: api/<DogController>
         [HttpGet]
-        public IActionResult Get([FromQuery]string? name = null, [FromQuery]int? age = null, [FromQuery]string? breed = null)
+        public async Task<IActionResult> Get([FromQuery]string? name = null, [FromQuery]int? age = null, [FromQuery]string? breed = null)
         {
             var service = new DogService();
-            var dogs = service.GetAll(name, age, breed);
+            var dogs = await service.GetAllAsync(name, age, breed);
 
             if (dogs == null)
                 return BadRequest();
@@ -26,10 +26,10 @@ namespace AnimalShelter.WebApi.Controllers
 
         // GET api/<DogController>/5
         [HttpGet("{id}")]
-        public IActionResult Get(Guid id)
+        public async Task<IActionResult> Get(Guid id)
         {
             var service = new DogService();
-            var dog = service.GetById(id);
+            var dog = await service.GetByIdAsync(id);
 
             if (dog == null)
                 return BadRequest();
@@ -39,7 +39,7 @@ namespace AnimalShelter.WebApi.Controllers
 
         // POST api/<DogController>
         [HttpPost]
-        public IActionResult Post([FromBody] Dog dog)
+        public async Task<IActionResult> Post([FromBody] Dog dog)
         {
             if (dog == null)
                 return BadRequest(new
@@ -49,7 +49,7 @@ namespace AnimalShelter.WebApi.Controllers
                 });
 
             var service = new DogService();
-            var success = service.Save(dog);
+            var success = await service.SaveAsync(dog);
 
             if (!success)
                 return BadRequest();
@@ -59,7 +59,7 @@ namespace AnimalShelter.WebApi.Controllers
 
         // PUT api/<DogController>/5
         [HttpPut("{id}")]
-        public IActionResult Put(Guid id, [FromBody] Dog dog)
+        public async Task<IActionResult> Put(Guid id, [FromBody] Dog dog)
         {
             if (dog == null)
                 return BadRequest(new
@@ -69,7 +69,7 @@ namespace AnimalShelter.WebApi.Controllers
                 });
 
             var service = new DogService();
-            var success = service.Update(id, dog);
+            var success = await service.UpdateAsync(id, dog);
 
             if (!success)
                 return BadRequest();
@@ -79,10 +79,10 @@ namespace AnimalShelter.WebApi.Controllers
 
         // DELETE api/<DogController>/5
         [HttpDelete("{id}")]
-        public IActionResult Delete(Guid id)
+        public async Task<IActionResult> Delete(Guid id)
         {
             var service = new DogService();
-            var success = service.Delete(id);
+            var success = await service.DeleteAsync(id);
 
             if (!success)
                 return BadRequest();

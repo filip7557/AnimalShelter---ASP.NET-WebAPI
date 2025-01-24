@@ -5,10 +5,10 @@ namespace AnimalShelter.Repository.Common
 {
     public interface IDogRepository
     {
-        public List<Dog>? GetAll(string? filterName, int? filterAge, string? filterBreed);
-        public Dog? GetById(Guid id);
-        public bool Save(Dog dog);
-        public bool Update(Guid id, Dog dog);
-        public bool Delete(Guid id);
+        public Task<List<Dog>?> GetAllAsync(string? filterName, int? filterAge, string? filterBreed);
+        public Task<Dog?> GetByIdAsync(Guid id);
+        public Task<bool> SaveAsync(Dog dog);
+        public Task<bool> UpdateAsync(Guid id, Dog dog);
+        public Task<bool> DeleteAsync(Guid id);
     }
 }

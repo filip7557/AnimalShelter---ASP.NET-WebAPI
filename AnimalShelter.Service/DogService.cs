@@ -6,34 +6,34 @@ namespace AnimalShelter.Service
 {
     public class DogService : IDogService
     {
-        public bool Save(Dog dog)
+        public async Task<bool> SaveAsync(Dog dog)
         {
             var repository = new DogRepository();
-            return repository.Save(dog);
+            return await repository.SaveAsync(dog);
         }
 
-        public bool Delete(Guid id)
+        public async Task<bool> DeleteAsync(Guid id)
         {
             var repository = new DogRepository();
-            return repository.Delete(id);
+            return await repository.DeleteAsync(id);
         }
 
-        public List<Dog>? GetAll(string? filterName, int? filterAge, string? filterBreed)
+        public async Task<List<Dog>?> GetAllAsync(string? filterName, int? filterAge, string? filterBreed)
         {
             var repository = new DogRepository();
-            return repository.GetAll(filterName, filterAge, filterBreed);
+            return await repository.GetAllAsync(filterName, filterAge, filterBreed);
         }
 
-        public Dog? GetById(Guid id)
+        public async Task<Dog?> GetByIdAsync(Guid id)
         {
             var repository = new DogRepository();
-            return repository.GetById(id);
+            return await repository.GetByIdAsync(id);
         }
 
-        public bool Update(Guid id, Dog dog)
+        public async Task<bool> UpdateAsync(Guid id, Dog dog)
         {
             var repository = new DogRepository();
-            return repository.Update(id, dog);
+            return await repository.UpdateAsync(id, dog);
         }
     }
 }
