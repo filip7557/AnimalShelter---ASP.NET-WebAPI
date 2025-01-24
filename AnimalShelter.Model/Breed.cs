@@ -1,4 +1,4 @@
-﻿namespace AnimalShelter.WebApi.Models
+﻿namespace AnimalShelter.Models
 {
     public class Breed
     {
