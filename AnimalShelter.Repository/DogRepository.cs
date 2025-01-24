@@ -21,13 +21,13 @@ namespace AnimalShelter.Repository
                     command.Parameters.AddWithValue("age", dog.Age);
                     command.Parameters.AddWithValue("breedid", dog.BreedId);
 
-                    await connection.OpenAsync();
+                    connection.Open();
 
                     var affectedRows = await command.ExecuteNonQueryAsync();
                     if (affectedRows == 0)
                         return false;
 
-                    await connection.CloseAsync();
+                    connection.Close();
 
                     return true;
                 }
@@ -48,34 +48,34 @@ namespace AnimalShelter.Repository
                     using var command = new NpgsqlCommand(commandText, connection);
                     command.Parameters.AddWithValue("id", NpgsqlTypes.NpgsqlDbType.Uuid, id);
 
-                    await connection.OpenAsync();
+                    connection.Open();
 
                     var reader = await command.ExecuteReaderAsync();
 
                     if (!reader.HasRows)
                     {
-                        await connection.CloseAsync();
+                        connection.Close();
                         return false;
                     }
 
-                    await connection.CloseAsync();
+                    connection.Close();
 
-                    await connection.OpenAsync();
+                    connection.Open();
 
                     commandText = "DELETE FROM \"Dog\" WHERE \"Id\" = @id;";
                     using var deleteCommand = new NpgsqlCommand(commandText, connection);
                     deleteCommand.Parameters.AddWithValue("id", NpgsqlTypes.NpgsqlDbType.Uuid, id);
 
-                    await connection.OpenAsync();
+                    connection.Open();
 
                     var affectedRows = await deleteCommand.ExecuteNonQueryAsync();
                     if (affectedRows == 0)
                     {
-                        await connection.CloseAsync();
+                        connection.Close();
                         return false;
                     }
 
-                    await connection.CloseAsync();
+                    connection.Close();
 
                     return true;
                 }
@@ -98,7 +98,7 @@ namespace AnimalShelter.Repository
 
                     AddDogFilters(filterName, filterAge, filterBreed, command);
 
-                    await connection.OpenAsync();
+                    connection.Open();
 
                     var reader = await command.ExecuteReaderAsync();
                     if (reader.HasRows)
@@ -122,10 +122,10 @@ namespace AnimalShelter.Repository
                     }
                     else
                     {
-                        await connection.CloseAsync();
+                        connection.Close();
                         return null;
                     }
-                    await connection.CloseAsync();
+                    connection.Close();
 
                     return dogs;
                 }
@@ -147,7 +147,7 @@ namespace AnimalShelter.Repository
                     using var command = new NpgsqlCommand(commandText, connection);
                     command.Parameters.AddWithValue("id", NpgsqlTypes.NpgsqlDbType.Uuid, id);
 
-                    await connection.OpenAsync();
+                    connection.Open();
 
                     var reader = await command.ExecuteReaderAsync();
                     if (reader.HasRows)
@@ -165,11 +165,11 @@ namespace AnimalShelter.Repository
                     }
                     else
                     {
-                        await connection.CloseAsync();
+                        connection.Close();
                         return null;
                     }
 
-                    await connection.CloseAsync();
+                    connection.Close();
 
                     return dog;
                 }
@@ -190,19 +190,19 @@ namespace AnimalShelter.Repository
                     using var command = new NpgsqlCommand(commandText, connection);
                     command.Parameters.AddWithValue("id", NpgsqlTypes.NpgsqlDbType.Uuid, id);
 
-                    await connection.OpenAsync();
+                    connection.Open();
 
                     var reader = await command.ExecuteReaderAsync();
 
                     if (!reader.HasRows)
                     {
-                        await connection.CloseAsync();
+                        connection.Close();
                         return false;
                     }
 
-                    await connection.CloseAsync();
+                    connection.Close();
 
-                    await connection.OpenAsync();
+                    connection.Open();
 
                     commandText = "UPDATE \"Dog\" set \"Name\" = @name, \"Age\" = @age, \"BreedId\" = @breed WHERE \"Id\" = @id;";
                     using var updateCommand = new NpgsqlCommand(commandText, connection);
@@ -214,11 +214,11 @@ namespace AnimalShelter.Repository
                     var affectedRows = await updateCommand.ExecuteNonQueryAsync();
                     if (affectedRows == 0)
                     {
-                        await connection.CloseAsync();
+                        connection.Close();
                         return false;
                     }
 
-                    await connection.CloseAsync();
+                    connection.Close();
 
                     return true;
                 }
