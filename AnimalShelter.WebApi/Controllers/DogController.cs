@@ -13,7 +13,7 @@ namespace AnimalShelter.WebApi.Controllers
     {
         // GET: api/<DogController>
         [HttpGet]
-        public async Task<IActionResult> Get([FromQuery]string? name = null, [FromQuery]int? age = null, [FromQuery]string? breed = null)
+        public async Task<IActionResult> GetAllAsync([FromQuery]string? name = null, [FromQuery]int? age = null, [FromQuery]string? breed = null)
         {
             var service = new DogService();
             var dogs = await service.GetAllAsync(name, age, breed);
@@ -26,7 +26,7 @@ namespace AnimalShelter.WebApi.Controllers
 
         // GET api/<DogController>/5
         [HttpGet("{id}")]
-        public async Task<IActionResult> Get(Guid id)
+        public async Task<IActionResult> GetByIdAsync(Guid id)
         {
             var service = new DogService();
             var dog = await service.GetByIdAsync(id);
@@ -39,7 +39,7 @@ namespace AnimalShelter.WebApi.Controllers
 
         // POST api/<DogController>
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] Dog dog)
+        public async Task<IActionResult> SaveAsync([FromBody] Dog dog)
         {
             if (dog == null)
                 return BadRequest(new
@@ -59,7 +59,7 @@ namespace AnimalShelter.WebApi.Controllers
 
         // PUT api/<DogController>/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put(Guid id, [FromBody] Dog dog)
+        public async Task<IActionResult> UpdateAsync(Guid id, [FromBody] Dog dog)
         {
             if (dog == null)
                 return BadRequest(new
@@ -79,7 +79,7 @@ namespace AnimalShelter.WebApi.Controllers
 
         // DELETE api/<DogController>/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(Guid id)
+        public async Task<IActionResult> DeleteAsync(Guid id)
         {
             var service = new DogService();
             var success = await service.DeleteAsync(id);
