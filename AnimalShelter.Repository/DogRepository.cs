@@ -1,4 +1,5 @@
-﻿using AnimalShelter.Models;
+﻿using AnimalShelter.Common;
+using AnimalShelter.Models;
 using AnimalShelter.Repository.Common;
 using Npgsql;
 
@@ -86,7 +87,7 @@ namespace AnimalShelter.Repository
             }
         }
 
-        public async Task<List<Dog>?> GetAllAsync(string? filterName, int? filterAge, string? filterBreed)
+        public async Task<List<Dog>?> GetAllAsync(DogFilter dogFilter)
         {
             var dogs = new List<Dog>();
             try
@@ -96,7 +97,7 @@ namespace AnimalShelter.Repository
                     var commandText = "SELECT \"Dog\".\"Id\", \"Dog\".\"Name\", \"Age\", \"Breed\".\"Name\", \"Breed\".\"Id\" FROM \"Dog\" LEFT JOIN \"Breed\" ON \"Dog\".\"BreedId\" = \"Breed\".\"Id\" WHERE 1 = 1";
                     using var command = new NpgsqlCommand(commandText, connection);
 
-                    AddDogFilters(filterName, filterAge, filterBreed, command);
+                    AddDogFilter(dogFilter.Name, dogFilter.Age, dogFilter.Breed, command);
 
                     connection.Open();
 
@@ -229,11 +230,11 @@ namespace AnimalShelter.Repository
             }
         }
 
-        private void AddDogFilters(string? name, int? age, string? breed, NpgsqlCommand command)
+        private void AddDogFilter(string? name, int? age, string? breed, NpgsqlCommand command)
         {
             if (name != null)
             {
-                command.CommandText += " AND \"Dog.Name\".\"Name\" = @name";
+                command.CommandText += " AND \"Dog\".\"Name\" = @name";
                 command.Parameters.AddWithValue("name", name);
             }
             if (age != null)

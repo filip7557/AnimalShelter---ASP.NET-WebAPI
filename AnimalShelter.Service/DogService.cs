@@ -1,4 +1,5 @@
-﻿using AnimalShelter.Models;
+﻿using AnimalShelter.Common;
+using AnimalShelter.Models;
 using AnimalShelter.Repository.Common;
 using AnimalShelter.Service.Common;
 
@@ -23,9 +24,9 @@ namespace AnimalShelter.Service
             return await _dogRepository.DeleteAsync(id);
         }
 
-        public async Task<List<Dog>?> GetAllAsync(string? filterName, int? filterAge, string? filterBreed)
+        public async Task<List<Dog>?> GetAllAsync(DogFilter dogFilter)
         {
-            return await _dogRepository.GetAllAsync(filterName, filterAge, filterBreed);
+            return await _dogRepository.GetAllAsync(dogFilter);
         }
 
         public async Task<Dog?> GetByIdAsync(Guid id)

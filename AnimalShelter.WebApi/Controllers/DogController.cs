@@ -1,4 +1,5 @@
-﻿using AnimalShelter.Models;
+﻿using AnimalShelter.Common;
+using AnimalShelter.Models;
 using AnimalShelter.Service.Common;
 using Microsoft.AspNetCore.Mvc;
 
@@ -22,7 +23,8 @@ namespace AnimalShelter.WebApi.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllAsync([FromQuery]string? name = null, [FromQuery]int? age = null, [FromQuery]string? breed = null)
         {
-            var dogs = await _service.GetAllAsync(name, age, breed);
+            var dogFilter = new DogFilter(name, age, breed);
+            var dogs = await _service.GetAllAsync(dogFilter);
 
             if (dogs == null)
                 return BadRequest();
