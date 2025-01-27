@@ -1,39 +1,41 @@
 ﻿using AnimalShelter.Models;
-using AnimalShelter.Repository;
+using AnimalShelter.Repository.Common;
 using AnimalShelter.Service.Common;
 
 namespace AnimalShelter.Service
 {
     public class DogService : IDogService
     {
+        private IDogRepository _dogRepository;
+
+        public DogService(IDogRepository repository)
+        {
+            _dogRepository = repository;
+        }
+
         public async Task<bool> SaveAsync(Dog dog)
         {
-            var repository = new DogRepository();
-            return await repository.SaveAsync(dog);
+            return await _dogRepository.SaveAsync(dog);
         }
 
         public async Task<bool> DeleteAsync(Guid id)
         {
-            var repository = new DogRepository();
-            return await repository.DeleteAsync(id);
+            return await _dogRepository.DeleteAsync(id);
         }
 
         public async Task<List<Dog>?> GetAllAsync(string? filterName, int? filterAge, string? filterBreed)
         {
-            var repository = new DogRepository();
-            return await repository.GetAllAsync(filterName, filterAge, filterBreed);
+            return await _dogRepository.GetAllAsync(filterName, filterAge, filterBreed);
         }
 
         public async Task<Dog?> GetByIdAsync(Guid id)
         {
-            var repository = new DogRepository();
-            return await repository.GetByIdAsync(id);
+            return await _dogRepository.GetByIdAsync(id);
         }
 
         public async Task<bool> UpdateAsync(Guid id, Dog dog)
         {
-            var repository = new DogRepository();
-            return await repository.UpdateAsync(id, dog);
+            return await _dogRepository.UpdateAsync(id, dog);
         }
     }
 }

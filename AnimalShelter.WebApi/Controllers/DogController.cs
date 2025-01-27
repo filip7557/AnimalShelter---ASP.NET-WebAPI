@@ -1,5 +1,5 @@
 ﻿using AnimalShelter.Models;
-using AnimalShelter.Service;
+using AnimalShelter.Service.Common;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -11,12 +11,18 @@ namespace AnimalShelter.WebApi.Controllers
     [LogActionFilter]
     public class DogController : ControllerBase
     {
+        private IDogService _service;
+
+        public DogController(IDogService dogService)
+        {
+            _service = dogService;
+        }
+
         // GET: api/<DogController>
         [HttpGet]
         public async Task<IActionResult> GetAllAsync([FromQuery]string? name = null, [FromQuery]int? age = null, [FromQuery]string? breed = null)
         {
-            var service = new DogService();
-            var dogs = await service.GetAllAsync(name, age, breed);
+            var dogs = await _service.GetAllAsync(name, age, breed);
 
             if (dogs == null)
                 return BadRequest();
@@ -28,8 +34,7 @@ namespace AnimalShelter.WebApi.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetByIdAsync(Guid id)
         {
-            var service = new DogService();
-            var dog = await service.GetByIdAsync(id);
+            var dog = await _service.GetByIdAsync(id);
 
             if (dog == null)
                 return BadRequest();
@@ -48,8 +53,7 @@ namespace AnimalShelter.WebApi.Controllers
                     message = "Invalid data."
                 });
 
-            var service = new DogService();
-            var success = await service.SaveAsync(dog);
+            var success = await _service.SaveAsync(dog);
 
             if (!success)
                 return BadRequest();
@@ -68,8 +72,7 @@ namespace AnimalShelter.WebApi.Controllers
                     message = "Invalid data."
                 });
 
-            var service = new DogService();
-            var success = await service.UpdateAsync(id, dog);
+            var success = await _service.UpdateAsync(id, dog);
 
             if (!success)
                 return BadRequest();
@@ -81,8 +84,7 @@ namespace AnimalShelter.WebApi.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAsync(Guid id)
         {
-            var service = new DogService();
-            var success = await service.DeleteAsync(id);
+            var success = await _service.DeleteAsync(id);
 
             if (!success)
                 return BadRequest();

@@ -1,4 +1,19 @@
+using AnimalShelter.Repository;
+using AnimalShelter.Repository.Common;
+using AnimalShelter.Service;
+using AnimalShelter.Service.Common;
+using Autofac;
+using Autofac.Extensions.DependencyInjection;
+
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host
+    .UseServiceProviderFactory(new AutofacServiceProviderFactory())
+    .ConfigureContainer<ContainerBuilder>(containerBuilder =>
+    {
+        containerBuilder.RegisterType<DogRepository>().As<IDogRepository>();
+        containerBuilder.RegisterType<DogService>().As<IDogService>();
+    });
 
 // Add services to the container.
 
