@@ -97,7 +97,7 @@ namespace AnimalShelter.Repository
                     var commandText = "SELECT \"Dog\".\"Id\", \"Dog\".\"Name\", \"Age\", \"Breed\".\"Name\", \"Breed\".\"Id\" FROM \"Dog\" LEFT JOIN \"Breed\" ON \"Dog\".\"BreedId\" = \"Breed\".\"Id\" WHERE 1 = 1";
                     using var command = new NpgsqlCommand(commandText, connection);
 
-                    AddDogFilter(dogFilter.Name, dogFilter.Age, dogFilter.Breed, command);
+                    AddDogFilter(dogFilter, command);
 
                     connection.Open();
 
@@ -230,22 +230,22 @@ namespace AnimalShelter.Repository
             }
         }
 
-        private void AddDogFilter(string? name, int? age, string? breed, NpgsqlCommand command)
+        private void AddDogFilter(DogFilter dogFilter, NpgsqlCommand command)
         {
-            if (name != null)
+            if (dogFilter.Name != null)
             {
                 command.CommandText += " AND \"Dog\".\"Name\" = @name";
-                command.Parameters.AddWithValue("name", name);
+                command.Parameters.AddWithValue("name", dogFilter.Name);
             }
-            if (age != null)
+            if (dogFilter.Age != null)
             {
                 command.CommandText += " AND \"Age\" = @age";
-                command.Parameters.AddWithValue("age", age);
+                command.Parameters.AddWithValue("age", dogFilter.Age);
             }
-            if (breed != null)
+            if (dogFilter.Breed != null)
             {
                 command.CommandText += " AND \"Breed\".\"Name\" = @breed";
-                command.Parameters.AddWithValue("breed", breed);
+                command.Parameters.AddWithValue("breed", dogFilter.Breed);
             }
         }
     }
