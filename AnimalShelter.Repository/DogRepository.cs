@@ -21,7 +21,6 @@ namespace AnimalShelter.Repository
             {
                 using (var connection = new NpgsqlConnection(_connectionString))
                 {
-                    //TODO: use string builder
                     var commandText = "INSERT INTO \"Dog\" (\"Id\", \"Name\", \"Age\", \"BreedId\") values (@id, @name, @age, @breedid);";
                     using var command = new NpgsqlCommand(commandText, connection);
                     command.Parameters.AddWithValue("id", NpgsqlTypes.NpgsqlDbType.Uuid, Guid.NewGuid());
@@ -94,6 +93,40 @@ namespace AnimalShelter.Repository
             }
         }
 
+        public async Task<int> CountAsync()
+        {
+            int count = 0;
+            try
+            {
+                using (var connection = new NpgsqlConnection(_connectionString))
+                {
+                    var commandText = "SELECT COUNT(\"Id\") FROM \"Dog\"";
+                    using var command = new NpgsqlCommand(commandText, connection);
+
+                    connection.Open();
+
+                    var reader = await command.ExecuteReaderAsync();
+                    if (reader.HasRows)
+                    {
+                        await reader.ReadAsync();
+                        int.TryParse(reader[0].ToString(), out count);
+                    }
+                    else
+                    {
+                        connection.Close();
+                        return 0;
+                    }
+                    connection.Close();
+
+                    return count;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return 0;
+            }
+        }
         public async Task<List<Dog>?> GetAllAsync(DogFilter dogFilter, Sorting sorting, Paging paging)
         {
             var dogs = new List<Dog>();
@@ -146,8 +179,9 @@ namespace AnimalShelter.Repository
                     return dogs;
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                Console.WriteLine(e.Message);
                 return null;
             }
         }

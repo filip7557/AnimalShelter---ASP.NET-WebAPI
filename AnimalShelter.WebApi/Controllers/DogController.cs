@@ -47,7 +47,17 @@ namespace AnimalShelter.WebApi.Controllers
             if (dogs == null)
                 return BadRequest();
 
-            return Ok(new object[] { paging, dogs });
+            var totalRecords = await _service.CountAsync();
+
+            var response = new PagedResponse<Dog>()
+            { 
+                Data = dogs,
+                TotalRecords = totalRecords,
+                PageSize = paging.Rpp,
+                PageNumber = paging.PageNumber
+            };
+
+            return Ok(response);
         }
 
         // GET api/<DogController>/5

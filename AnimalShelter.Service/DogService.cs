@@ -38,5 +38,10 @@ namespace AnimalShelter.Service
         {
             return await _dogRepository.UpdateAsync(id, dog);
         }
+
+        public async Task<int> CountAsync()
+        {
+            return await _dogRepository.CountAsync();
+        }
     }
 }
