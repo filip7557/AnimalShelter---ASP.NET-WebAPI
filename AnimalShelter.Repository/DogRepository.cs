@@ -1,19 +1,24 @@
 ﻿using AnimalShelter.Common;
 using AnimalShelter.Models;
 using AnimalShelter.Repository.Common;
+using Microsoft.Extensions.Configuration;
 using Npgsql;
 
 namespace AnimalShelter.Repository
 {
     public class DogRepository : IDogRepository
     {
-        private readonly string connectionString = "Host=localhost;Port=5432;Database=dogs;Username=postgres;Password=test";
+        private string _connectionString;
+        public DogRepository(IConfiguration configuration)
+        {
+            _connectionString = configuration.GetConnectionString("DefaultConnection")!;
+        }
 
         public async Task<bool> SaveAsync(Dog dog)
         {
             try
             {
-                using (var connection = new NpgsqlConnection(connectionString))
+                using (var connection = new NpgsqlConnection(_connectionString))
                 {
                     var commandText = "INSERT INTO \"Dog\" (\"Id\", \"Name\", \"Age\", \"BreedId\") values (@id, @name, @age, @breedid);";
                     using var command = new NpgsqlCommand(commandText, connection);
@@ -43,7 +48,7 @@ namespace AnimalShelter.Repository
         {
             try
             {
-                using (var connection = new NpgsqlConnection(connectionString))
+                using (var connection = new NpgsqlConnection(_connectionString))
                 {
                     var commandText = "SELECT \"Id\", \"Name\", \"Age\" FROM \"Dog\" WHERE \"Id\" = @id;";
                     using var command = new NpgsqlCommand(commandText, connection);
@@ -92,7 +97,7 @@ namespace AnimalShelter.Repository
             var dogs = new List<Dog>();
             try
             {
-                using (var connection = new NpgsqlConnection(connectionString))
+                using (var connection = new NpgsqlConnection(_connectionString))
                 {
                     var commandText = "SELECT \"Dog\".\"Id\", \"Dog\".\"Name\", \"Age\", \"Breed\".\"Name\", \"Breed\".\"Id\" FROM \"Dog\" LEFT JOIN \"Breed\" ON \"Dog\".\"BreedId\" = \"Breed\".\"Id\" WHERE 1 = 1";
                     using var command = new NpgsqlCommand(commandText, connection);
@@ -142,7 +147,7 @@ namespace AnimalShelter.Repository
             try
             {
                 var dog = new Dog() { Name = "" };
-                using (var connection = new NpgsqlConnection(connectionString))
+                using (var connection = new NpgsqlConnection(_connectionString))
                 {
                     var commandText = "SELECT \"Dog\".\"Id\", \"Dog\".\"Name\", \"Age\", \"Breed\".\"Name\", \"Breed\".\"Id\" FROM \"Dog\" LEFT JOIN \"Breed\" ON \"Dog\".\"BreedId\" = \"Breed\".\"Id\" WHERE \"Dog\".\"Id\" = @id;";
                     using var command = new NpgsqlCommand(commandText, connection);
@@ -185,7 +190,7 @@ namespace AnimalShelter.Repository
         {
             try
             {
-                using (var connection = new NpgsqlConnection(connectionString))
+                using (var connection = new NpgsqlConnection(_connectionString))
                 {
                     var commandText = "SELECT \"Id\", \"Name\", \"Age\" FROM \"Dog\" WHERE \"Id\" = @id;";
                     using var command = new NpgsqlCommand(commandText, connection);
