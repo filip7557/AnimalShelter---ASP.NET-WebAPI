@@ -10,7 +10,7 @@ namespace AnimalShelter.Common
 
         public void Apply(StringBuilder command)
         {
-            command.Append($" ORDER BY \"Dog\".\"{OrderBy}\" {SortOrder}");
+            command.Append($" ORDER BY {OrderBy} {SortOrder}");
         }
     }
 }

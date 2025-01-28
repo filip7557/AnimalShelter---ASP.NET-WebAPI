@@ -23,7 +23,7 @@ namespace AnimalShelter.WebApi.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllAsync(
             string? name = null, int? age = null, string? breed = null,
-            string orderBy = "Id", string sortOrder = "ASC",
+            string orderBy = "\"Dog\".\"Id\"", string sortOrder = "ASC",
             int currentPage = 1, int rpp = 5)
         {
             var dogFilter = new DogFilter()
