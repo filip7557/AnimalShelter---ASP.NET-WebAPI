@@ -21,15 +21,23 @@ namespace AnimalShelter.WebApi.Controllers
 
         // GET: api/<DogController>
         [HttpGet]
-        public async Task<IActionResult> GetAllAsync([FromQuery]string? name = null, [FromQuery]int? age = null, [FromQuery]string? breed = null)
+        public async Task<IActionResult> GetAllAsync(
+            [FromQuery]string? name = null, [FromQuery]int? age = null, [FromQuery]string? breed = null,
+            string orderBy = "Id", string sortOrder = "ASC")
         {
             var dogFilter = new DogFilter(name, age, breed);
-            var dogs = await _service.GetAllAsync(dogFilter);
+            var sorting = new Sorting()
+            {
+                OrderBy = orderBy,
+                SortOrder = sortOrder
+            };
+            var dogs = await _service.GetAllAsync(dogFilter, sorting);
 
             if (dogs == null)
                 return BadRequest();
 
             return Ok(dogs);
+            //TODO: return total count and current page
         }
 
         // GET api/<DogController>/5

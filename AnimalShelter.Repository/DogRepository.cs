@@ -20,6 +20,7 @@ namespace AnimalShelter.Repository
             {
                 using (var connection = new NpgsqlConnection(_connectionString))
                 {
+                    //TODO: use string builder
                     var commandText = "INSERT INTO \"Dog\" (\"Id\", \"Name\", \"Age\", \"BreedId\") values (@id, @name, @age, @breedid);";
                     using var command = new NpgsqlCommand(commandText, connection);
                     command.Parameters.AddWithValue("id", NpgsqlTypes.NpgsqlDbType.Uuid, Guid.NewGuid());
@@ -92,7 +93,7 @@ namespace AnimalShelter.Repository
             }
         }
 
-        public async Task<List<Dog>?> GetAllAsync(DogFilter dogFilter)
+        public async Task<List<Dog>?> GetAllAsync(DogFilter dogFilter, Sorting sorting)
         {
             var dogs = new List<Dog>();
             try
@@ -103,6 +104,9 @@ namespace AnimalShelter.Repository
                     using var command = new NpgsqlCommand(commandText, connection);
 
                     AddDogFilter(dogFilter, command);
+                    AddSorting(sorting, command);
+
+                    Console.WriteLine(command.CommandText);
 
                     connection.Open();
 
@@ -252,6 +256,11 @@ namespace AnimalShelter.Repository
                 command.CommandText += " AND \"Breed\".\"Name\" = @breed";
                 command.Parameters.AddWithValue("breed", dogFilter.Breed);
             }
+        }
+
+        private void AddSorting(Sorting sorting, NpgsqlCommand command)
+        {
+            command.CommandText += $" ORDER BY \"Dog\".\"{sorting.OrderBy}\" {sorting.SortOrder}";
         }
     }
 }

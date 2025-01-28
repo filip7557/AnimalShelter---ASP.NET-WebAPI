@@ -24,9 +24,9 @@ namespace AnimalShelter.Service
             return await _dogRepository.DeleteAsync(id);
         }
 
-        public async Task<List<Dog>?> GetAllAsync(DogFilter dogFilter)
+        public async Task<List<Dog>?> GetAllAsync(DogFilter dogFilter, Sorting sorting)
         {
-            return await _dogRepository.GetAllAsync(dogFilter);
+            return await _dogRepository.GetAllAsync(dogFilter, sorting);
         }
 
         public async Task<Dog?> GetByIdAsync(Guid id)
