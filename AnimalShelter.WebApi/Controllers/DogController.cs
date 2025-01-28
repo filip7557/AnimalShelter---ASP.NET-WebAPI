@@ -22,8 +22,9 @@ namespace AnimalShelter.WebApi.Controllers
         // GET: api/<DogController>
         [HttpGet]
         public async Task<IActionResult> GetAllAsync(
-            [FromQuery]string? name = null, [FromQuery]int? age = null, [FromQuery]string? breed = null,
-            string orderBy = "Id", string sortOrder = "ASC")
+            string? name = null, int? age = null, string? breed = null,
+            string orderBy = "Id", string sortOrder = "ASC",
+            int currentPage = 1, int rpp = 5)
         {
             var dogFilter = new DogFilter(name, age, breed);
             var sorting = new Sorting()
@@ -31,7 +32,12 @@ namespace AnimalShelter.WebApi.Controllers
                 OrderBy = orderBy,
                 SortOrder = sortOrder
             };
-            var dogs = await _service.GetAllAsync(dogFilter, sorting);
+            var paging = new Paging()
+            {
+                Rpp = rpp,
+                PageNumber = currentPage,
+            };
+            var dogs = await _service.GetAllAsync(dogFilter, sorting, paging);
 
             if (dogs == null)
                 return BadRequest();

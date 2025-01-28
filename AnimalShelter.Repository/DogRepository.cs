@@ -93,7 +93,7 @@ namespace AnimalShelter.Repository
             }
         }
 
-        public async Task<List<Dog>?> GetAllAsync(DogFilter dogFilter, Sorting sorting)
+        public async Task<List<Dog>?> GetAllAsync(DogFilter dogFilter, Sorting sorting, Paging paging)
         {
             var dogs = new List<Dog>();
             try
@@ -105,6 +105,7 @@ namespace AnimalShelter.Repository
 
                     AddDogFilter(dogFilter, command);
                     AddSorting(sorting, command);
+                    AddPaging(paging, command);
 
                     Console.WriteLine(command.CommandText);
 
@@ -145,6 +146,8 @@ namespace AnimalShelter.Repository
                 return null;
             }
         }
+
+        
 
         public async Task<Dog?> GetByIdAsync(Guid id)
         {
@@ -261,6 +264,10 @@ namespace AnimalShelter.Repository
         private void AddSorting(Sorting sorting, NpgsqlCommand command)
         {
             command.CommandText += $" ORDER BY \"Dog\".\"{sorting.OrderBy}\" {sorting.SortOrder}";
+        }
+        private void AddPaging(Paging paging, NpgsqlCommand command)
+        {
+            command.CommandText += $" LIMIT {paging.Rpp} OFFSET ({paging.PageNumber} - 1) * {paging.Rpp}";
         }
     }
 }

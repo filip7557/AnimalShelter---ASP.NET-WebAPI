@@ -8,11 +8,6 @@ namespace AnimalShelter.Common
 {
     public class Paging
     {
-        public Paging(int rpp, int pageNumber)
-        {
-            Rpp = rpp;
-            PageNumber = pageNumber;
-        }
         public int Rpp { get; set; }
         public int PageNumber { get; set; }
     }
