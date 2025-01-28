@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace AnimalShelter.WebApi.Controllers
 {
@@ -15,9 +14,11 @@ namespace AnimalShelter.WebApi.Controllers
             // Check if directory exists
             if (!Directory.Exists(folderPath))
             {
-                return NotFound(new {
+                return NotFound(new
+                {
                     error = "Not Found",
-                    message = "Directory not found." }
+                    message = "Directory not found."
+                }
                 );
             }
 
@@ -35,7 +36,8 @@ namespace AnimalShelter.WebApi.Controllers
             var filePath = Path.Combine("wwwroot/files", fileName);
             if (!System.IO.File.Exists(filePath))
             {
-                return NotFound(new {
+                return NotFound(new
+                {
                     error = "Not Found",
                     message = "File not found."
                 });
@@ -50,7 +52,8 @@ namespace AnimalShelter.WebApi.Controllers
         {
             if (file == null || file.Length == 0)
             {
-                return BadRequest(new {
+                return BadRequest(new
+                {
                     error = "Bad Request",
                     message = "File is empty or not provided."
                 });
@@ -58,7 +61,8 @@ namespace AnimalShelter.WebApi.Controllers
 
             if (file.ContentType != "application/pdf")
             {
-                return BadRequest(new {
+                return BadRequest(new
+                {
                     error = "Bad Request",
                     message = "Only PDF files are allowed."
                 });
@@ -77,10 +81,11 @@ namespace AnimalShelter.WebApi.Controllers
                 await file.CopyToAsync(stream);
             }
 
-            return Ok(new {
+            return Ok(new
+            {
                 status = "Ok",
                 message = "File uploaded successfully.",
-                fileName = file.FileName 
+                fileName = file.FileName
             });
         }
     }
