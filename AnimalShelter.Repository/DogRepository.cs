@@ -292,8 +292,8 @@ namespace AnimalShelter.Repository
         {
             if (!string.IsNullOrEmpty(dogFilter.Name))
             {
-                commandText.Append(" AND \"Dog\".\"Name\" LIKE '%@name%'");
-                command.Parameters.AddWithValue("name", dogFilter.Name);
+                commandText.Append(" AND \"Dog\".\"Name\" ILIKE @name");
+                command.Parameters.AddWithValue("name", $"%{dogFilter.Name}%");
             }
             if (dogFilter.Age != null)
             {
@@ -302,8 +302,8 @@ namespace AnimalShelter.Repository
             }
             if (!string.IsNullOrEmpty(dogFilter.Breed))
             {
-                commandText.Append(" AND \"Breed\".\"Name\" LIKE '%@breed%'");
-                command.Parameters.AddWithValue("breed", dogFilter.Breed);
+                commandText.Append(" AND \"Breed\".\"Name\" ILIKE @breed");
+                command.Parameters.AddWithValue("breed", $"%{dogFilter.Breed}%");
             }
         }
 
