@@ -7,7 +7,7 @@ namespace AnimalShelter.Repository.Common
     {
         public Task<List<Dog>?> GetAllAsync(DogFilter dogFilter, Sorting sorting, Paging paging);
 
-        public Task<int> CountAsync();
+        public Task<int> CountAsync(DogFilter dogFilter);
 
         public Task<Dog?> GetByIdAsync(Guid id);
 

@@ -102,15 +102,17 @@ namespace AnimalShelter.Repository
             }
         }
 
-        public async Task<int> CountAsync()
+        public async Task<int> CountAsync(DogFilter dogFilter)
         {
             int count = 0;
             try
             {
                 using (var connection = new NpgsqlConnection(_connectionString))
                 {
-                    var commandText = "SELECT COUNT(\"Id\") FROM \"Dog\"";
-                    using var command = new NpgsqlCommand(commandText, connection);
+                    StringBuilder commandText = new StringBuilder("SELECT COUNT(\"Id\") FROM \"Dog\"");
+                    using var command = new NpgsqlCommand("", connection);
+                    ApplyFilters(dogFilter, commandText, command);
+                    command.CommandText = commandText.ToString();
 
                     connection.Open();
 
@@ -291,14 +293,17 @@ namespace AnimalShelter.Repository
             if (!string.IsNullOrEmpty(dogFilter.Name))
             {
                 commandText.Append(" AND \"Dog\".\"Name\" = @name");
+                command.Parameters.AddWithValue("name", dogFilter.Name);
             }
             if (dogFilter.Age != null)
             {
                 commandText.Append(" AND \"Age\" = @age");
+                command.Parameters.AddWithValue("age", dogFilter.Age);
             }
             if (!string.IsNullOrEmpty(dogFilter.Breed))
             {
                 commandText.Append(" AND \"Breed\".\"Name\" = @breed");
+                command.Parameters.AddWithValue("breed", dogFilter.Breed);
             }
         }
 

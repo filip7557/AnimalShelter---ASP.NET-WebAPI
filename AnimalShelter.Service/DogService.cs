@@ -27,7 +27,7 @@ namespace AnimalShelter.Service
         public async Task<PagedResponse<Dog>> GetAllAsync(DogFilter dogFilter, Sorting sorting, Paging paging)
         {
             var dogs = await _dogRepository.GetAllAsync(dogFilter, sorting, paging);
-            var count = await CountAsync();
+            var count = await CountAsync(dogFilter);
             return new PagedResponse<Dog>()
             {
                 Data = dogs ?? new List<Dog>(),
@@ -47,9 +47,9 @@ namespace AnimalShelter.Service
             return await _dogRepository.UpdateAsync(id, dog);
         }
 
-        public async Task<int> CountAsync()
+        public async Task<int> CountAsync(DogFilter dogFilter)
         {
-            return await _dogRepository.CountAsync();
+            return await _dogRepository.CountAsync(dogFilter);
         }
     }
 }
