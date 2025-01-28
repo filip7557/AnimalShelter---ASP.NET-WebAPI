@@ -10,5 +10,10 @@ namespace AnimalShelter.Common
     {
         public int Rpp { get; set; }
         public int PageNumber { get; set; }
+
+        public void Apply(StringBuilder command)
+        {
+            command.Append($" LIMIT @rpp OFFSET (@pageNumber - 1) * @rpp");
+        }
     }
 }
