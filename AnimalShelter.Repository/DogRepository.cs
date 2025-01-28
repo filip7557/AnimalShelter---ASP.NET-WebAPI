@@ -109,7 +109,7 @@ namespace AnimalShelter.Repository
             {
                 using (var connection = new NpgsqlConnection(_connectionString))
                 {
-                    StringBuilder commandText = new StringBuilder("SELECT COUNT(\"Id\") FROM \"Dog\"");
+                    StringBuilder commandText = new StringBuilder("SELECT COUNT(\"Id\") FROM \"Dog\" WHERE 1 = 1");
                     using var command = new NpgsqlCommand("", connection);
                     ApplyFilters(dogFilter, commandText, command);
                     command.CommandText = commandText.ToString();
@@ -292,7 +292,7 @@ namespace AnimalShelter.Repository
         {
             if (!string.IsNullOrEmpty(dogFilter.Name))
             {
-                commandText.Append(" AND \"Dog\".\"Name\" = @name");
+                commandText.Append(" AND \"Dog\".\"Name\" LIKE '%@name%'");
                 command.Parameters.AddWithValue("name", dogFilter.Name);
             }
             if (dogFilter.Age != null)
@@ -302,7 +302,7 @@ namespace AnimalShelter.Repository
             }
             if (!string.IsNullOrEmpty(dogFilter.Breed))
             {
-                commandText.Append(" AND \"Breed\".\"Name\" = @breed");
+                commandText.Append(" AND \"Breed\".\"Name\" LIKE '%@breed%'");
                 command.Parameters.AddWithValue("breed", dogFilter.Breed);
             }
         }
