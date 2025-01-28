@@ -26,7 +26,12 @@ namespace AnimalShelter.WebApi.Controllers
             string orderBy = "Id", string sortOrder = "ASC",
             int currentPage = 1, int rpp = 5)
         {
-            var dogFilter = new DogFilter(name, age, breed);
+            var dogFilter = new DogFilter()
+            {
+                Name = name,
+                Age = age,
+                Breed = breed,
+            };
             var sorting = new Sorting()
             {
                 OrderBy = orderBy,
@@ -42,8 +47,7 @@ namespace AnimalShelter.WebApi.Controllers
             if (dogs == null)
                 return BadRequest();
 
-            return Ok(dogs);
-            //TODO: return total count and current page
+            return Ok(new object[] { paging, dogs });
         }
 
         // GET api/<DogController>/5
