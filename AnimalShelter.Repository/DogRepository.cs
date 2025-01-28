@@ -10,6 +10,15 @@ namespace AnimalShelter.Repository
     public class DogRepository : IDogRepository
     {
         private string _connectionString;
+
+        private readonly Dictionary<string, string> queryParams = new Dictionary<string, string>()
+        {
+            { "Id", "\"Dog\".\"Id\"" },
+            { "Name", "\"Dog\".\"Name\"" },
+            { "Age", "\"Age\"" },
+            { "Breed", "\"Breed\".\"Name\"" }
+        };
+
         public DogRepository(IConfiguration configuration)
         {
             _connectionString = configuration.GetConnectionString("DefaultConnection")!;
@@ -127,6 +136,7 @@ namespace AnimalShelter.Repository
                 return 0;
             }
         }
+
         public async Task<List<Dog>?> GetAllAsync(DogFilter dogFilter, Sorting sorting, Paging paging)
         {
             var dogs = new List<Dog>();
@@ -136,16 +146,13 @@ namespace AnimalShelter.Repository
                 {
                     StringBuilder commandText = new StringBuilder("SELECT \"Dog\".\"Id\", \"Dog\".\"Name\", \"Age\", \"Breed\".\"Name\", \"Breed\".\"Id\" FROM \"Dog\" LEFT JOIN \"Breed\" ON \"Dog\".\"BreedId\" = \"Breed\".\"Id\" WHERE 1 = 1");
 
-                    dogFilter.Apply(commandText);
-                    sorting.Apply(commandText);
-                    paging.Apply(commandText);
+                    using var command = new NpgsqlCommand("", connection);
 
-                    using var command = new NpgsqlCommand(commandText.ToString(), connection);
-                    if (!string.IsNullOrEmpty(dogFilter.Name)) command.Parameters.AddWithValue("name", dogFilter.Name);
-                    if (dogFilter.Age != null) command.Parameters.AddWithValue("age", dogFilter.Age);
-                    if (!string.IsNullOrEmpty(dogFilter.Breed)) command.Parameters.AddWithValue("breed", dogFilter.Breed);
-                    command.Parameters.AddWithValue("rpp", paging.Rpp);
-                    command.Parameters.AddWithValue("pageNumber", paging.PageNumber);
+                    ApplyFilters(dogFilter, commandText, command);
+                    ApplySorting(sorting, commandText);
+                    ApplyPaging(paging, commandText, command);
+
+                    command.CommandText = commandText.ToString();
 
                     connection.Open();
 
@@ -185,8 +192,6 @@ namespace AnimalShelter.Repository
                 return null;
             }
         }
-
-        
 
         public async Task<Dog?> GetByIdAsync(Guid id)
         {
@@ -279,6 +284,34 @@ namespace AnimalShelter.Repository
             {
                 return false;
             }
+        }
+
+        private void ApplyFilters(DogFilter dogFilter, StringBuilder commandText, NpgsqlCommand command)
+        {
+            if (!string.IsNullOrEmpty(dogFilter.Name))
+            {
+                commandText.Append(" AND \"Dog\".\"Name\" = @name");
+            }
+            if (dogFilter.Age != null)
+            {
+                commandText.Append(" AND \"Age\" = @age");
+            }
+            if (!string.IsNullOrEmpty(dogFilter.Breed))
+            {
+                commandText.Append(" AND \"Breed\".\"Name\" = @breed");
+            }
+        }
+
+        private void ApplySorting(Sorting sorting, StringBuilder commandText)
+        {
+            commandText.Append($" ORDER BY {queryParams[sorting.OrderBy]} {sorting.SortOrder}");
+        }
+
+        private void ApplyPaging(Paging paging, StringBuilder commandText, NpgsqlCommand command)
+        {
+            commandText.Append($" LIMIT @rpp OFFSET (@pageNumber - 1) * @rpp");
+            command.Parameters.AddWithValue("rpp", paging.Rpp);
+            command.Parameters.AddWithValue("pageNumber", paging.PageNumber);
         }
     }
 }
