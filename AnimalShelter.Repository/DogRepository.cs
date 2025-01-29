@@ -60,25 +60,7 @@ namespace AnimalShelter.Repository
             {
                 using (var connection = new NpgsqlConnection(_connectionString))
                 {
-                    var commandText = "SELECT \"Id\", \"Name\", \"Age\" FROM \"Dog\" WHERE \"Id\" = @id;";
-                    using var command = new NpgsqlCommand(commandText, connection);
-                    command.Parameters.AddWithValue("id", NpgsqlTypes.NpgsqlDbType.Uuid, id);
-
-                    connection.Open();
-
-                    var reader = await command.ExecuteReaderAsync();
-
-                    if (!reader.HasRows)
-                    {
-                        connection.Close();
-                        return false;
-                    }
-
-                    connection.Close();
-
-                    connection.Open();
-
-                    commandText = "DELETE FROM \"Dog\" WHERE \"Id\" = @id;";
+                    var commandText = "DELETE FROM \"Dog\" WHERE \"Id\" = @id;";
                     using var deleteCommand = new NpgsqlCommand(commandText, connection);
                     deleteCommand.Parameters.AddWithValue("id", NpgsqlTypes.NpgsqlDbType.Uuid, id);
 
@@ -245,30 +227,14 @@ namespace AnimalShelter.Repository
             {
                 using (var connection = new NpgsqlConnection(_connectionString))
                 {
-                    var commandText = "SELECT \"Id\", \"Name\", \"Age\" FROM \"Dog\" WHERE \"Id\" = @id;";
-                    using var command = new NpgsqlCommand(commandText, connection);
-                    command.Parameters.AddWithValue("id", NpgsqlTypes.NpgsqlDbType.Uuid, id);
-
-                    connection.Open();
-
-                    var reader = await command.ExecuteReaderAsync();
-
-                    if (!reader.HasRows)
-                    {
-                        connection.Close();
-                        return false;
-                    }
-
-                    connection.Close();
-
-                    connection.Open();
-
-                    commandText = "UPDATE \"Dog\" set \"Name\" = @name, \"Age\" = @age, \"BreedId\" = @breed WHERE \"Id\" = @id;";
+                    var commandText = "UPDATE \"Dog\" set \"Name\" = @name, \"Age\" = @age, \"BreedId\" = @breed WHERE \"Id\" = @id;";
                     using var updateCommand = new NpgsqlCommand(commandText, connection);
                     updateCommand.Parameters.AddWithValue("name", dog.Name);
                     updateCommand.Parameters.AddWithValue("age", dog.Age);
                     updateCommand.Parameters.AddWithValue("breed", dog.BreedId);
                     updateCommand.Parameters.AddWithValue("id", NpgsqlTypes.NpgsqlDbType.Uuid, id);
+
+                    connection.Open();
 
                     var affectedRows = await updateCommand.ExecuteNonQueryAsync();
                     if (affectedRows == 0)

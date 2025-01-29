@@ -21,6 +21,9 @@ namespace AnimalShelter.Service
 
         public async Task<bool> DeleteAsync(Guid id)
         {
+            var dog = await GetByIdAsync(id);
+            if (dog == null)
+                return false;
             return await _dogRepository.DeleteAsync(id);
         }
 
@@ -42,9 +45,12 @@ namespace AnimalShelter.Service
             return await _dogRepository.GetByIdAsync(id);
         }
 
-        public async Task<bool> UpdateAsync(Guid id, Dog dog)
+        public async Task<bool> UpdateAsync(Guid id, Dog newDog)
         {
-            return await _dogRepository.UpdateAsync(id, dog);
+            var dog = await GetByIdAsync(id);
+            if (dog == null)
+                return false;
+            return await _dogRepository.UpdateAsync(id, newDog);
         }
 
         public async Task<int> CountAsync(DogFilter dogFilter)
